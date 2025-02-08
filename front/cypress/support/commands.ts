@@ -41,3 +41,16 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+Cypress.Commands.add('loginWithToken', () => {
+  cy.request({
+    method: 'POST',
+    url: 'localhost:8080/api/auth/login', // Adjust the URL to match your login API
+    body: {
+      email: 'yoga@studio.com',
+      password: 'test!1234'
+    }
+  }).then((response) => {
+    const token = response.body.token;
+    window.localStorage.setItem('token', token); // Adjust the key if needed
+  });
+});

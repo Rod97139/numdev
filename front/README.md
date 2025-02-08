@@ -12,6 +12,10 @@ Go inside folder:
 
 > cd yoga
 
+install node version 16.14.2
+
+> nvm install 16.14.2
+
 Install dependencies:
 
 > npm install

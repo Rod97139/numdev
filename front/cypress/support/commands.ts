@@ -42,6 +42,24 @@
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 Cypress.Commands.add('loginWithToken', () => {
+
+  let token = null;
+  cy.request({
+    method: 'POST',
+    url: 'localhost:8080/api/auth/login', // Adjust the URL to match your login API
+    body: {
+      email: 'yoga@studio.com',
+      password: 'test!1234'
+    }
+  }).then((response) => {
+    token = response.body.token;
+    const id = response.body.id;
+    window.localStorage.setItem('id', id); // Adjust the key if needed
+    window.localStorage.setItem('token', token); // Adjust the key if needed
+  });
+});
+
+Cypress.Commands.add('register', () => {
   cy.request({
     method: 'POST',
     url: 'localhost:8080/api/auth/login', // Adjust the URL to match your login API
@@ -51,6 +69,24 @@ Cypress.Commands.add('loginWithToken', () => {
     }
   }).then((response) => {
     const token = response.body.token;
+    const id = response.body.id;
+    window.localStorage.setItem('id', id); // Adjust the key if needed
     window.localStorage.setItem('token', token); // Adjust the key if needed
+  });
+});
+
+Cypress.Commands.add('idSession', () => {
+
+  cy.request({
+    method: 'GET',
+    url: 'localhost:8080/api/session',
+    headers: {
+      Authorization: 'Bearer ' + window.localStorage.getItem('token'),
+    }
+  }).then((response) => {
+    const maxId = response.body.reduce((max, session) => {
+      return session.id > max ? session.id : max;
+    }, 0);
+    window.localStorage.setItem('idSession', maxId === 0 ? 1 : maxId);
   });
 });

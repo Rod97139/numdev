@@ -7,8 +7,8 @@
     "test:watch": "jest --watch",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "e2e:ci": "ng run yoga:e2e-ci",
-    "e2e:coverage": "ng run yoga:e2e-ci && npx nyc report --reporter=lcov --reporter=text-summary",
+    "e2e:ci": "ng run yoga:e2e-ci --spec=cypress/e2e/login-crud.cy.ts",
+    "e2e:coverage": "ng run yoga:e2e-ci --spec=cypress/e2e/login-crud.cy.ts && npx nyc report --reporter=lcov --reporter=text-summary",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run"
   },

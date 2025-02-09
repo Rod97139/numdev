@@ -31,6 +31,16 @@ Install the database:
 > 
 > mvn spring-boot:run
 
+Run tests:
+
+> mvn test
+
+Run tests coverage:
+
+> mvn clean verify
+> 
+> mvn jacoco:report
+
 ### Front-end
 
 install node version 16.14.2

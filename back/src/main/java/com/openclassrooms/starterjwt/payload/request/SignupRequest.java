@@ -6,6 +6,7 @@ import com.openclassrooms.starterjwt.utils.jacoco.Generated;
 import lombok.Data;
 
 @Data
+@Generated
 public class SignupRequest {
   @NotBlank
   @Size(max = 50)

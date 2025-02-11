@@ -6,6 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
+@Generated
 public class JwtResponse {
   private String token;
   private String type = "Bearer";

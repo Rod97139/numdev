@@ -4,6 +4,7 @@ import com.openclassrooms.starterjwt.utils.jacoco.Generated;
 
 import javax.validation.constraints.NotBlank;
 
+@Generated
 public class LoginRequest {
 	@NotBlank
   private String email;

@@ -1,6 +1,9 @@
 package com.openclassrooms.starterjwt.services;
 
+import com.openclassrooms.starterjwt.exception.BadRequestException;
+import com.openclassrooms.starterjwt.exception.NotFoundException;
 import com.openclassrooms.starterjwt.models.Session;
+import com.openclassrooms.starterjwt.models.User;
 import com.openclassrooms.starterjwt.repository.SessionRepository;
 import com.openclassrooms.starterjwt.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,17 +11,12 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 public class SessionServiceTests {
@@ -38,22 +36,19 @@ public class SessionServiceTests {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
         session = new Session();
         session.setId(1L);
         session.setUsers(new ArrayList<>());
 
-        // Configuration des rôles et création de l'utilisateur avec le constructeur fourni
-        List<GrantedAuthority> authorities = new ArrayList<>(Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")));
-
-        user = new User(
-                "user@example.com",           // username
-                "password123",                // password
-                true,                         // enabled
-                true,                         // accountNonExpired
-                true,                         // credentialsNonExpired
-                true,                         // accountNonLocked
-                authorities                   // authorities
-        );
+        user = User.builder()
+                .id(1L)
+                .email("user@example.com")
+                .firstName("John")
+                .lastName("Doe")
+                .password("password123")
+                .admin(false)
+                .build();
     }
 
     @Test
@@ -78,13 +73,93 @@ public class SessionServiceTests {
 
     @Test
     void testFindAllSessions() {
-        List<Session> sessions = Arrays.asList(session);
-        when(sessionRepository.findAll()).thenReturn(sessions);
+        when(sessionRepository.findAll()).thenReturn(Collections.singletonList(session));
 
-        List<Session> result = sessionService.findAll();
-
-        assertEquals(1, result.size());
+        assertEquals(1, sessionService.findAll().size());
         verify(sessionRepository, times(1)).findAll();
     }
 
+    @Test
+    void testGetById() {
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
+
+        Session foundSession = sessionService.getById(1L);
+
+        assertNotNull(foundSession);
+        assertEquals(1L, foundSession.getId());
+        verify(sessionRepository, times(1)).findById(1L);
+    }
+
+    @Test
+    void testUpdateSession() {
+        when(sessionRepository.save(session)).thenReturn(session);
+
+        Session updatedSession = sessionService.update(1L, session);
+
+        assertNotNull(updatedSession);
+        assertEquals(1L, updatedSession.getId());
+        verify(sessionRepository, times(1)).save(session);
+    }
+
+    @Test
+    void testParticipate_Success() {
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        when(sessionRepository.save(session)).thenReturn(session);
+
+        sessionService.participate(1L, 1L);
+
+        assertEquals(1, session.getUsers().size());
+        assertEquals(1L, session.getUsers().get(0).getId());
+        verify(sessionRepository, times(1)).save(session);
+    }
+
+    @Test
+    void testParticipate_UserAlreadyParticipating() {
+        session.getUsers().add(user);
+
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
+        when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+        assertThrows(BadRequestException.class, () -> sessionService.participate(1L, 1L));
+    }
+
+    @Test
+    void testParticipate_SessionOrUserNotFound() {
+        when(sessionRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> sessionService.participate(1L, 1L));
+
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
+        when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> sessionService.participate(1L, 1L));
+    }
+
+    @Test
+    void testNoLongerParticipate_Success() {
+        session.getUsers().add(user);
+
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
+        when(sessionRepository.save(session)).thenReturn(session);
+
+        sessionService.noLongerParticipate(1L, 1L);
+
+        assertTrue(session.getUsers().isEmpty());
+        verify(sessionRepository, times(1)).save(session);
+    }
+
+    @Test
+    void testNoLongerParticipate_UserNotParticipating() {
+        when(sessionRepository.findById(1L)).thenReturn(Optional.of(session));
+
+        assertThrows(BadRequestException.class, () -> sessionService.noLongerParticipate(1L, 1L));
+    }
+
+    @Test
+    void testNoLongerParticipate_SessionNotFound() {
+        when(sessionRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class, () -> sessionService.noLongerParticipate(1L, 1L));
+    }
 }

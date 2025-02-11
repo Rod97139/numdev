@@ -40,6 +40,8 @@ Run tests coverage:
 > mvn clean verify
 > 
 > mvn jacoco:report
+> 
+> mvn clean install; mvn clean verify; mvn jacoco:report
 
 ### Front-end
 

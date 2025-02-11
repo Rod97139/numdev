@@ -1,10 +1,12 @@
 package com.openclassrooms.starterjwt.payload.response;
 
+import com.openclassrooms.starterjwt.utils.jacoco.Generated;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Generated
 public class JwtResponse {
   private String token;
   private String type = "Bearer";

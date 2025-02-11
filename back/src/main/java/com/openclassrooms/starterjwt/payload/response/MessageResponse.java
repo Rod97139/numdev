@@ -1,5 +1,8 @@
 package com.openclassrooms.starterjwt.payload.response;
 
+import com.openclassrooms.starterjwt.utils.jacoco.Generated;
+
+@Generated
 public class MessageResponse {
   private String message;
 

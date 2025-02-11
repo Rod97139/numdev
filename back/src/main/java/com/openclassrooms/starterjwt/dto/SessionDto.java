@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.dto;
 
+import com.openclassrooms.starterjwt.utils.jacoco.Generated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Generated
 public class SessionDto {
     private Long id;
 

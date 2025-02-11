@@ -25,6 +25,7 @@ public class SessionTests {
         validator = factory.getValidator();
 
         session = Session.builder()
+                .id(1L)
                 .name("Test Session")
                 .date(new Date())
                 .description("This is a test session")
@@ -74,5 +75,64 @@ public class SessionTests {
         session.setDescription(new String(new char[2501]).replace('\0', 'A'));
         Set<ConstraintViolation<Session>> violations = validator.validate(session);
         assertThat(violations).isNotEmpty();
+    }
+
+    // New tests for equals, hashCode, canEqual, and timestamps
+
+    @Test
+    void testEqualsAndHashCode() {
+        Session session1 = Session.builder()
+                .id(1L)
+                .name("Test Session")
+                .date(new Date())
+                .description("This is a test session")
+                .build();
+
+        Session session2 = Session.builder()
+                .id(1L)
+                .name("Test Session")
+                .date(new Date())
+                .description("This is a test session")
+                .build();
+
+        Session session3 = Session.builder()
+                .id(2L)
+                .name("Another Session")
+                .date(new Date())
+                .description("Different description")
+                .build();
+
+        assertThat(session1).isEqualTo(session2);
+        assertThat(session1.hashCode()).isEqualTo(session2.hashCode());
+
+        assertThat(session1).isNotEqualTo(session3);
+        assertThat(session1.hashCode()).isNotEqualTo(session3.hashCode());
+    }
+
+    @Test
+    void testCanEqual() {
+        Session session1 = Session.builder()
+                .id(1L)
+                .name("Test Session")
+                .date(new Date())
+                .description("This is a test session")
+                .build();
+
+        assertThat(session1.canEqual(session)).isTrue();
+        assertThat(session1.canEqual(new Object())).isFalse();
+    }
+
+    @Test
+    void testSetCreatedAt() {
+        LocalDateTime now = LocalDateTime.now();
+        session.setCreatedAt(now);
+        assertThat(session.getCreatedAt()).isEqualTo(now);
+    }
+
+    @Test
+    void testSetUpdatedAt() {
+        LocalDateTime now = LocalDateTime.now();
+        session.setUpdatedAt(now);
+        assertThat(session.getUpdatedAt()).isEqualTo(now);
     }
 }

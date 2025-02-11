@@ -1,5 +1,7 @@
 package com.openclassrooms.starterjwt.payload.request;
 
+import com.openclassrooms.starterjwt.utils.jacoco.Generated;
+
 import javax.validation.constraints.NotBlank;
 
 public class LoginRequest {

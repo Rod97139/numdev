@@ -1,5 +1,6 @@
 package com.openclassrooms.starterjwt.dto;
 
+import com.openclassrooms.starterjwt.utils.jacoco.Generated;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Generated
 public class TeacherDto {
     private Long id;
     @NotBlank
